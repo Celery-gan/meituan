@@ -32,32 +32,55 @@
             </div>
           </div>
           <!-- 手机APP -->
-          <div class="mouse">手机APP</div>
+          <div class="mouse phone-app">手机APP</div>
           <!-- 商家中心 -->
-          <div class="has-child" @mouseenter="immigrate = 2">
+          <div class="has-child" @mouseenter="immigrate = 2" @mouseleave="immigrate = 0">
             <div v-if="immigrate!==2">商家中心</div>
             <div class="childtwo" v-if="immigrate===2">
-              <!-- <div class="listinfo mouse">商家中心</div>
-              <div class="bussinfo mouse" v-for="(item) in Businesslist" :key="item.id">{{item}}</div>-->
+              <div class="listinfo mouse">商家中心</div>
+              <div class="bussinfo">
+                <div v-for="item in Businesslist" :key="item.id" class="mouse">{{item}}</div>
+              </div>
             </div>
           </div>
           <!-- 美团规则 -->
           <div class="has-child" @mouseenter="immigrate = 3">
             <div v-if="immigrate!==3">美团规则</div>
             <div class="childthree" v-if="immigrate===3" @mouseleave="immigrate = 0">
-              <div v-for="item in rulelist" :key="item.id" class="listinfo mouse">{{item}}</div>
+              <div v-for="item in rulelist" :key="item.id" class="listinfo mouse">
+                <div>{{item}}</div>
+              </div>
             </div>
           </div>
           <!-- 网站导航 -->
-          <div class="has-child" @mouseenter="immigrate = 4">
+          <div class="has-child" @mouseenter="immigrate = 4" @mouseleave="immigrate = 0">
             <div v-if="immigrate!==4">网站导航</div>
-            <div class="childfour" v-if="immigrate===4" @mouseleave="immigrate = 0">
+            <div class="childfour" v-if="immigrate===4">
               <div class="listinfo mouse">网站导航</div>
               <div class="listinfo222 flexeve">
-                <div class="site-title">酒店旅游</div>
-                <div class="site-title">吃美食</div>
-                <div class="site-title">看电影</div>
-                <div class="site-title">手机应用</div>
+                <div v-for="(item,index) in navigation" :key="item.id">
+                  <div class="site-title">{{item.name}}</div>
+                  <!-- 酒店 -->
+
+                  <div v-if="index===0" class="nav-hotels">
+                    <div v-for="(item1) in item.module" :key="item1.id" class="mouse">{{item1}}</div>
+                  </div>
+
+                  <!-- 食物 -->
+                  <div v-if="index===1" class="nav-foods">
+                    <div v-for="(item1) in item.module" :key="item1.id" class="mouse">{{item1}}</div>
+                  </div>
+                  <!-- 电影 -->
+                  <div v-if="index===2" class="nav-movies">
+                    <div v-for="(item1) in item.module" :key="item1.id" class="mouse">{{item1}}</div>
+                  </div>
+                  <!-- 手机应用 -->
+                  <div v-if="index===3" class="nav-apply">
+                    <div v-for="(item1) in item.module" :key="item1.id">
+                      <img :src="item1" alt />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -72,7 +95,7 @@
         </div>
         <div class="search-box">
           <i-input
-            :value.sync="input"
+            v-model="searches"
             size="large"
             placeholder="搜索商家或地点"
             style="width: 450px"
@@ -81,9 +104,15 @@
           ></i-input>
           <i-button type="warning" icon="ios-search"></i-button>
           <div v-if="immigrate===5" class="search-list">
-            <div class="search-hot">热门搜索</div>
+            <div v-if="searches.trim()===''" class="search-hot">热门搜索</div>
+            <div v-else>
+              <div v-for="item in searchlist" :key="item.id" class="search-result">{{item.name}}</div>
+            </div>
           </div>
         </div>
+      </div>
+      <div class="top-slot">
+        <slot></slot>
       </div>
     </div>
   </div>
@@ -93,36 +122,104 @@
 export default {
   data() {
     return {
+      // 隐藏下拉菜单的标志符，当不为零时会显示一些隐藏的内容
       immigrate: 0,
+      // 定位城市
       usercity: "",
+      // 城市具体信息
       crumb: [],
       minelist: ["我的美团", "我的订单", "我的收藏", "抵用券", "账号设置"],
-      Businesslist: ["商家中心", "美团餐饮商户中心", "1", "2", "3"],
+      Businesslist: [
+        "美团餐饮商户中心",
+        "登录商家中心",
+        "美团智能收银",
+        "我想合作",
+        "手机免费开店",
+        "餐饮代理商招募",
+        "商家申请开票",
+        "免费合作美团排队"
+      ],
       rulelist: ["美团规则", "规则中心", "规则目录", "规则评议院"],
-      input: ""
+      navigation: [
+        {
+          name: "酒店旅游",
+          module: [
+            "国际机票",
+            "火车票",
+            "民宿",
+            "经济型酒店",
+            "主题酒店",
+            "商务酒店",
+            "公寓",
+            "豪华酒店",
+            "客栈",
+            "青年旅社",
+            "度假酒店",
+            "别墅",
+            "农家院"
+          ]
+        },
+        {
+          name: "吃美食",
+          module: ["烤鱼", "特色小吃", "烧烤", "自助餐", "火锅", "代金券"]
+        },
+        {
+          name: "看电影",
+          module: [
+            "热映电影",
+            "热门影院",
+            "热映电影口碑榜",
+            "最受期待电影",
+            "国内票房榜",
+            "北美票房榜",
+            "电影排行榜"
+          ]
+        },
+        {
+          name: "手机应用",
+          module: [
+            "https://s0.meituan.net/bs/fe-web-meituan/2d53095/img/appicons/meituan.png",
+            "https://s1.meituan.net/bs/fe-web-meituan/404d350/img/appicons/waimai.png",
+            "https://p0.meituan.net/travelcube/162c3308d9622f6d9cfaa49e60be4dca8573.png",
+            "https://s1.meituan.net/bs/fe-web-meituan/404d350/img/appicons/dianping.png",
+            "https://s1.meituan.net/bs/fe-web-meituan/404d350/img/appicons/maoyan.png"
+          ]
+        }
+      ],
+      // 搜索关键字
+      searches: "",
+      // 搜索结果数组
+      searchlist: []
     };
   },
   components: {},
   methods: {
     // 获取定位
     getcity() {
-      this.$axios
-        .req("position")
-        .then(res => {
-          let arr = res.data.split(",");
-          let arr2 = arr[1].split(":");
-          let len = arr2[1].length - 1;
-          this.usercity = arr2[1].slice(2, len);
-          this.getcrumb();
-        })
-        .catch(err => {
-          console.log("err");
-        });
+      if (localStorage.getItem("cityname")) {
+        this.usercity = localStorage.getItem("cityname");
+        this.getcrumb();
+      } else {
+        this.$api
+          .getPosition()
+          .then(res => {
+            let arr = res.data.split(",");
+            let arr2 = arr[1].split(":");
+            let len = arr2[1].length - 1;
+            this.usercity = arr2[1].slice(2, len - 1);
+            localStorage.setItem("cityname", this.usercity);
+            this.getcrumb();
+          })
+          .catch(err => {
+            console.log("err");
+          });
+      }
     },
     // 获取城市具体信息
     getcrumb() {
-      this.$axios
-        .req(`crumbs?city=${this.usercity}`)
+      console.log(this.usercity);
+      this.$api
+        .getCrumbs(this.usercity)
         .then(res => {
           this.crumb = res.data.areas;
           this.crumb = this.crumb.slice(0, 3);
@@ -131,14 +228,34 @@ export default {
           console.log(err);
         });
     },
+    getProducts() {
+      this.$api
+        .getSearchTop(this.usercity, this.searches)
+        .then(res => {
+          this.searchlist = res.data.top;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
     changecitys() {
-      this.$router.push("/changecity");
+      if (this.$route.path !== "/changecity") {
+        this.$router.push("/changecity");
+      } else {
+        history.go(0);
+      }
     }
   },
   mounted() {
     this.getcity();
   },
-  watch: {},
+  watch: {
+    searches(val) {
+      if (this.searches.trim() !== "") {
+        this.getProducts();
+      }
+    }
+  },
   computed: {}
 };
 </script>
@@ -198,14 +315,14 @@ export default {
   align-items: center;
   line-height: 40px;
   text-align: center;
-  div {
+  .phone-app {
     width: 80px;
   }
   .has-child {
+    width: 80px;
     position: relative;
   }
 }
-
 // 头部条下拉菜单
 .childone,
 .childtwo,
@@ -229,7 +346,7 @@ export default {
   position: absolute;
   top: 40px;
   right: 0;
-  width: 120px;
+  width: 110px;
   background: #fff;
   box-shadow: -1px 5px 8px -2px rgba(0, 0, 0, 0.1);
 } // 头部条最大的下拉菜单
@@ -241,7 +358,9 @@ export default {
   background: #fff;
   box-shadow: -1px 5px 8px -2px rgba(0, 0, 0, 0.1);
   .site-title {
-    margin: 10px;
+    margin-top: 10px;
+    font-size: 16px;
+    color: #333;
   }
 }
 // 头部主体
@@ -257,24 +376,71 @@ export default {
   position: absolute;
   // 搜索菜单
   .search-list {
+    z-index: 2;
+    background: rgb(255, 255, 255);
     width: 443px;
-    height: 50px;
     position: absolute;
-    top: 40px;
+    top: 36px;
     left: 0;
     line-height: 20px;
     box-shadow: 0px 2px 7px 0 rgba(19, 149, 255, 0.4);
     border: 1px solid rgb(171, 231, 255);
-    // 菜单内热门搜索
+    // 未搜索时的热门搜索
     .search-hot {
       font-size: 12px;
       margin: 5px;
     }
+    // 搜索结果显示
+    .search-result {
+      padding-left: 5px;
+    }
+    .search-result:hover {
+      background: rgb(248, 248, 248);
+      color: #fe8c00;
+    }
   }
 }
-
 // logo大小设置
 .logo {
   width: 126px;
+}
+.nav-hotels {
+  height: 220px;
+  margin: 5px;
+  width: 280px;
+  display: flex;
+  line-height: 30px;
+  flex-wrap: wrap;
+  div {
+    width: 90px;
+  }
+}
+.nav-foods {
+  height: 220px;
+  width: 170px;
+  display: flex;
+  flex-wrap: wrap;
+  line-height: 30px;
+  div {
+    width: 80px;
+  }
+}
+.nav-movies {
+  height: 220px;
+  width: 100px;
+  line-height: 30px;
+}
+.nav-apply {
+  height: 220px;
+  width: 300px;
+  display: flex;
+  img {
+    margin: 30px 0 0;
+    width: 60px;
+  }
+}
+.top-slot {
+  width: 500px;
+  margin: 0 auto;
 }
 </style>

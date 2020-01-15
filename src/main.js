@@ -11,6 +11,10 @@ Vue.config.productionTip = false
 import service from "./http"
 Vue.prototype.$axios = service
 
+// 所有接口的api封装
+import api from './http/api'
+Vue.prototype.$api = api
+
 import iView from 'iview';
 import 'iview/dist/styles/iview.css'; // 使用 CSS
 Vue.use(iView);
