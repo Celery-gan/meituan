@@ -6,10 +6,9 @@
         <!-- 定位 -->
         <div class="header-bar-position">
           <div>
-            <!-- <Icon type="ios-location" class="header-location"></Icon>
-            <Icon type="location"></Icon>-->
             <i class="ivu-icon ivu-icon-ios-locate header-location"></i>
-            <span>{{usercity}}</span>
+            <span v-if="mycity===''">{{usercity}}</span>
+            <span v-else>{{mycity}}</span>
             <span class="position-switch mouse" @click="changecitys">切换城市</span>
             <span>
               <span>[</span>
@@ -91,7 +90,12 @@
     <div class="header-content header-body">
       <div class="flexonly">
         <div>
-          <img src="//s0.meituan.net/bs/fe-web-meituan/fa5f0f0/img/logo.png" alt="美团" class="logo" />
+          <img
+            src="//s0.meituan.net/bs/fe-web-meituan/fa5f0f0/img/logo.png"
+            alt="美团"
+            class="logo"
+            @click="gotohome"
+          />
         </div>
         <div class="search-box">
           <i-input
@@ -197,7 +201,8 @@ export default {
     // 获取定位
     getcity() {
       if (localStorage.getItem("cityname")) {
-        this.usercity = localStorage.getItem("cityname");
+        let strs = localStorage.getItem("cityname").split(",");
+        this.usercity = strs[0];
         this.getcrumb();
       } else {
         this.$api
@@ -217,10 +222,10 @@ export default {
     },
     // 获取城市具体信息
     getcrumb() {
-      console.log(this.usercity);
       this.$api
         .getCrumbs(this.usercity)
         .then(res => {
+          // console.log(res);
           this.crumb = res.data.areas;
           this.crumb = this.crumb.slice(0, 3);
         })
@@ -232,15 +237,25 @@ export default {
       this.$api
         .getSearchTop(this.usercity, this.searches)
         .then(res => {
+          // console.log(res);
           this.searchlist = res.data.top;
         })
         .catch(err => {
           console.log(err);
         });
     },
+    //切换城市按钮
     changecitys() {
       if (this.$route.path !== "/changecity") {
         this.$router.push("/changecity");
+      } else {
+        history.go(0);
+      }
+    },
+    // 美团logo 返回首页
+    gotohome() {
+      if (this.$route.path !== "/") {
+        this.$router.push("/");
       } else {
         history.go(0);
       }
@@ -256,15 +271,17 @@ export default {
       }
     }
   },
-  computed: {}
+  computed: {
+    mycity() {
+      return this.$store.state.mycity;
+    }
+  }
 };
 </script>
 
 <style scoped lang='scss'>
 // 鼠标移入事件
-.mouse:hover {
-  color: #fe8c00;
-}
+
 // 公共头部
 .common-header {
   background: #fff;

@@ -7,12 +7,15 @@
         <sear></sear>
       </div>
       <div class="city-crads">
+        <!-- 热门城市 -->
         <hots></hots>
       </div>
       <div class="city-crads">
+        <!-- 最近访问 -->
         <rece></rece>
       </div>
       <div class="city-crads">
+        <!-- 拼音搜索 -->
         <spel></spel>
       </div>
     </Card>
@@ -29,19 +32,7 @@ export default {
     return {};
   },
   components: { sear, hots, rece, spel },
-  methods: {
-    // getCity() {
-    //   this.$api
-    //     .getCity()
-    //     .then(res => {
-    //       console.log(res);
-    //     })
-    //     .catch(err => {
-    //       console.log(err);
-    //     });
-    // }
-  },
-
+  methods: {},
   mounted() {},
   watch: {},
   computed: {}
